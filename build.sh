@@ -1,0 +1,1 @@
+g++ -o ./OpenGLDemo -g3 -Wall -Wno-unused-variable -Wno-write-strings -fno-rtti -fno-exceptions -Werror main.cpp -Wl,-map,output.map -framework CoreFoundation -framework OpenGL -framework SDL2 -F /Library/Frameworks
