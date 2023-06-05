@@ -1,10 +1,16 @@
-#define GL_SILENCE_DEPRECATION // OpenGL is deprecated on OSX.
-
-#include <SDL2/SDL.h>
-#include <OpenGL/gl3.h>
-#include <SDL2/SDL_opengl.h>
-#include <OpenGL/glu.h>
-#include <stdio.h>
+#ifdef __APPLE__
+	#define GL_SILENCE_DEPRECATION
+	#include <SDL2/SDL.h>
+	#include <OpenGL/gl3.h>
+	#include <SDL2/SDL_opengl.h>
+	#include <OpenGL/glu.h>
+	#include <stdio.h>
+#elif defined _WIN32 || defined _WIN64
+	#include <SDL.h>
+	#include <SDL_opengl.h>
+	#include <stdio.h>
+	#include "win32_opengl.hpp"
+#endif 
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -119,8 +125,7 @@ bool create_shader(GLuint *shader_program) {
 	return true;
 }
 
-int main( int argc, char* args[] )
-{
+int main(int argc, char* args[]) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("Failed to init SDL: %s\n", SDL_GetError());
 		return -1;
@@ -151,6 +156,10 @@ int main( int argc, char* args[] )
 	printf("GL_VERSION: %s \n", glGetString(GL_VERSION));
 	printf("GL_SHADING_LANGUAGE_VERSION: %s \n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	printf("GL_EXTENSIONS: %s \n", glGetString(GL_EXTENSIONS));
+
+	#if defined _WIN32 || defined _WIN64
+		load_opengl_extensions();
+	#endif
 
 	if (SDL_GL_SetSwapInterval(1) < 0) {
 		printf( "Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError() );
@@ -202,7 +211,7 @@ int main( int argc, char* args[] )
 
 	int width, height, num_channels;
 	stbi_set_flip_vertically_on_load(true); 
-	unsigned char *data = stbi_load("Texture.png", &width, &height, &num_channels, 0);
+	unsigned char *data = stbi_load("../resources/Texture.png", &width, &height, &num_channels, 0);
 	if (!data) {
 		printf("Error, unable to load texture");
 		return -1;
